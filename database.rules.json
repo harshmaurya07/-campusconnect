@@ -15,9 +15,9 @@
       }
     },
     "classCodes": {
-      ".read": "auth != null  && auth.uid === $uid",
+      ".read": "auth != null",
       "$classCode": {
-        ".write": "auth != null && !data.exists()"
+        ".write": "auth != null"
       }
     },
     "teachers": {
