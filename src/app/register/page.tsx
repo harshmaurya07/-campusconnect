@@ -47,6 +47,10 @@ export default function RegisterPage() {
                   <Label htmlFor="student-password-reg">Password</Label>
                   <Input id="student-password-reg" type="password" required />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="student-class-code">Class Code</Label>
+                  <Input id="student-class-code" placeholder="e.g. CS101-FA24" required />
+                </div>
               </CardContent>
               <CardFooter className="flex flex-col items-center gap-4">
                 <Button className="w-full" asChild>

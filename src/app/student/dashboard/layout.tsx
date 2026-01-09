@@ -17,6 +17,7 @@ import {
   Bell,
   LogOut,
   Settings,
+  PlusCircle
 } from "lucide-react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -29,6 +30,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
 
@@ -37,6 +45,25 @@ const navItems = [
   { href: "/student/dashboard/attendance", icon: CalendarCheck, label: "Attendance" },
   { href: "/student/dashboard/assignments", icon: BookOpen, label: "Assignments" },
 ];
+
+function ClassSwitcher() {
+    return (
+        <Select defaultValue="cs-101">
+            <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select a class" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="cs-101">Computer Science 101</SelectItem>
+                <SelectItem value="ma-203">Calculus II</SelectItem>
+                <SelectItem value="en-101">English Literature</SelectItem>
+                <DropdownMenuSeparator />
+                <Button variant="ghost" className="w-full justify-start rounded-sm h-8 px-2 font-normal">
+                    <PlusCircle className="mr-2"/> Join new class
+                </Button>
+            </SelectContent>
+        </Select>
+    )
+}
 
 function UserNav() {
   return (
@@ -108,14 +135,17 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
         <header className="flex h-14 items-center justify-between gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6">
           <SidebarTrigger className="md:hidden" />
           <div className="flex-1" />
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5"/>
-            <span className="absolute top-1 right-1 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-          </Button>
-          <UserNav />
+           <div className="flex items-center gap-4">
+            <ClassSwitcher />
+            <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5"/>
+                <span className="absolute top-1 right-1 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+            </Button>
+            <UserNav />
+          </div>
         </header>
         <main className="flex-1 p-4 sm:p-6">{children}</main>
       </SidebarInset>
