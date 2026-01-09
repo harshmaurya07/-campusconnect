@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { School, GraduationCap } from 'lucide-react'
 import { Logo } from "@/components/logo"
-import { useAuth } from "@/firebase";
+import { useAuth, useDatabase } from "@/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { ref, get } from "firebase/database";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,6 +20,7 @@ export default function LoginPage() {
   const [teacherEmail, setTeacherEmail] = useState('');
   const [teacherPassword, setTeacherPassword] = useState('');
   const auth = useAuth();
+  const database = useDatabase();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -27,17 +29,42 @@ export default function LoginPage() {
     const password = role === 'student' ? studentPassword : teacherPassword;
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      if (role === 'student') {
+        const studentProfileRef = ref(database, `users/student/${user.uid}`);
+        const snapshot = await get(studentProfileRef);
+        if (!snapshot.exists()) {
+          // If profile doesn't exist, it means they are not approved yet.
+          await auth.signOut();
+          toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: "Your registration is still pending approval from the teacher.",
+          });
+          return;
+        }
+      }
+      
       toast({
         title: "Login Successful",
         description: "Welcome back!",
       });
       router.push(role === 'student' ? '/student/dashboard' : '/teacher/dashboard');
+
     } catch (error: any) {
+      let errorMessage = error.message;
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        errorMessage = "Invalid email or password. Please try again.";
+      }
+       if (error.code === 'auth/invalid-credential') {
+        errorMessage = "Invalid email or password. Please try again.";
+      }
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: error.message,
+        description: errorMessage,
       });
     }
   };

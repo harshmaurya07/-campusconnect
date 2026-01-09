@@ -10,10 +10,9 @@ import { School, GraduationCap } from 'lucide-react'
 import { Logo } from "@/components/logo"
 import { useAuth, useDatabase } from "@/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { ref, set } from "firebase/database";
+import { ref, set, get } from "firebase/database";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-
 
 export default function RegisterPage() {
   const [studentName, setStudentName] = useState('');
@@ -36,41 +35,76 @@ export default function RegisterPage() {
     const password = role === 'student' ? studentPassword : teacherPassword;
     const name = role === 'student' ? studentName : teacherName;
 
+    if (!email || !password || !name) {
+      toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out all required fields." });
+      return;
+    }
+    
+    if (role === 'student' && (!studentCollegeId || !studentClassCode)) {
+      toast({ variant: "destructive", title: "Missing Fields", description: "Please provide a College ID and Class Code." });
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
-      const userProfileRef = ref(database, `users/${role}/${user.uid}`);
-      
-      const userData: any = {
-        id: user.uid,
-        email: user.email,
-        fullName: name,
-        role: role,
-      };
+      if (role === 'teacher') {
+        const userProfileRef = ref(database, `users/teacher/${user.uid}`);
+        await set(userProfileRef, {
+          id: user.uid,
+          email: user.email,
+          fullName: name,
+          role: role,
+        });
+        toast({ title: "Registration Successful", description: "Your teacher account has been created." });
+        router.push('/teacher/dashboard');
+      } else {
+        // Student Registration
+        const classCodeRef = ref(database, `classCodes/${studentClassCode}`);
+        const classCodeSnap = await get(classCodeRef);
 
-      if (role === 'student') {
-        userData.collegeId = studentCollegeId;
-        // Here you would typically also validate the classCode and enroll the student
+        if (!classCodeSnap.exists()) {
+          await user.delete(); // Clean up auth user if class code is invalid
+          toast({ variant: "destructive", title: "Invalid Class Code", description: "The class code you entered does not exist." });
+          return;
+        }
+
+        const teacherId = classCodeSnap.val().teacherId;
+        const requestRef = ref(database, `classRequests/${teacherId}/${user.uid}`);
+        
+        await set(requestRef, {
+          id: user.uid,
+          email: user.email,
+          fullName: name,
+          collegeId: studentCollegeId,
+          status: 'pending',
+          classCode: studentClassCode,
+        });
+
+        await auth.signOut();
+
+        toast({
+          title: "Registration Request Sent",
+          description: "Your request to join the class has been sent to the teacher for approval. You will be able to log in once approved.",
+        });
+        router.push('/login');
       }
-      
-      await set(userProfileRef, userData);
-      
-      toast({
-        title: "Registration Successful",
-        description: "Your account has been created.",
-      });
 
-      router.push(role === 'student' ? '/student/dashboard' : '/teacher/dashboard');
     } catch (error: any) {
+       let errorMessage = error.message;
+       if (error.code === 'auth/email-already-in-use') {
+           errorMessage = "This email address is already in use by another account.";
+       } else if (error.code === 'auth/weak-password') {
+           errorMessage = "The password is too weak. It must be at least 6 characters long.";
+       }
        toast({
         variant: "destructive",
         title: "Registration Failed",
-        description: error.message,
+        description: errorMessage,
       });
     }
   };
-
 
   return (
     <main className="flex min-h-screen w-full items-center justify-center bg-background p-4">
