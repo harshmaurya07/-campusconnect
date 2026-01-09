@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import { School, GraduationCap, CalendarCheck, BookOpen, Megaphone, ArrowRight } from 'lucide-react'
+import { School, GraduationCap, CalendarCheck, BookOpen, Megaphone, ArrowRight, KeyRound } from 'lucide-react'
 import { Logo } from "@/components/logo"
 
 const features = [
@@ -19,6 +19,11 @@ const features = [
     icon: <Megaphone className="h-10 w-10 text-primary" />,
     title: "Instant Announcements",
     description: "Stay informed with real-time announcements from your teachers about classes, exams, and more.",
+  },
+   {
+    icon: <KeyRound className="h-10 w-10 text-primary" />,
+    title: "Class Codes",
+    description: "Teachers create unique codes for their classes, and students use these codes to easily enroll.",
   },
 ];
 
@@ -70,7 +75,7 @@ export default function LandingPage() {
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:grid-cols-3 mt-12">
+            <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-6xl lg:grid-cols-4 mt-12">
               {features.map((feature, index) => (
                 <Card key={index} className="h-full">
                   <CardHeader>
