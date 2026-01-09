@@ -53,7 +53,7 @@ export default function RegisterPage() {
                   <Link href="/student/dashboard">Register</Link>
                 </Button>
                 <p className="text-sm text-muted-foreground">
-                  Already have an account? <Link href="/" className="font-semibold text-primary hover:underline">Login here</Link>
+                  Already have an account? <Link href="/login" className="font-semibold text-primary hover:underline">Login here</Link>
                 </p>
               </CardFooter>
             </Card>
@@ -83,7 +83,7 @@ export default function RegisterPage() {
                   <Link href="/teacher/dashboard">Register</Link>
                 </Button>
                 <p className="text-sm text-muted-foreground">
-                  Already have an account? <Link href="/" className="font-semibold text-primary hover:underline">Login here</Link>
+                  Already have an account? <Link href="/login" className="font-semibold text-primary hover:underline">Login here</Link>
                 </p>
               </CardFooter>
             </Card>
