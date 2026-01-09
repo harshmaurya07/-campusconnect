@@ -1,3 +1,5 @@
+'use client';
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,8 +8,41 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { School, GraduationCap } from 'lucide-react'
 import { Logo } from "@/components/logo"
+import { useAuth } from "@/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
+  const [studentEmail, setStudentEmail] = useState('');
+  const [studentPassword, setStudentPassword] = useState('');
+  const [teacherEmail, setTeacherEmail] = useState('');
+  const [teacherPassword, setTeacherPassword] = useState('');
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogin = async (role: 'student' | 'teacher') => {
+    const email = role === 'student' ? studentEmail : teacherEmail;
+    const password = role === 'student' ? studentPassword : teacherPassword;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
+      router.push(role === 'student' ? '/student/dashboard' : '/teacher/dashboard');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: error.message,
+      });
+    }
+  };
+
+
   return (
     <div className="flex flex-col min-h-screen items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md space-y-8">
@@ -33,17 +68,15 @@ export default function LoginPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="student-email">Email</Label>
-                  <Input id="student-email" type="email" placeholder="student@example.edu" required />
+                  <Input id="student-email" type="email" placeholder="student@example.edu" required value={studentEmail} onChange={(e) => setStudentEmail(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="student-password">Password</Label>
-                  <Input id="student-password" type="password" required />
+                  <Input id="student-password" type="password" required value={studentPassword} onChange={(e) => setStudentPassword(e.target.value)} />
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col items-center gap-4">
-                <Button className="w-full" asChild>
-                  <Link href="/student/dashboard">Login</Link>
-                </Button>
+                <Button className="w-full" onClick={() => handleLogin('student')}>Login</Button>
                 <p className="text-sm text-muted-foreground">
                   Don't have an account? <Link href="/register" className="font-semibold text-primary hover:underline">Register here</Link>
                 </p>
@@ -59,17 +92,15 @@ export default function LoginPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="teacher-email">Email</Label>
-                  <Input id="teacher-email" type="email" placeholder="teacher@example.edu" required />
+                  <Input id="teacher-email" type="email" placeholder="teacher@example.edu" required value={teacherEmail} onChange={(e) => setTeacherEmail(e.target.value)}/>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="teacher-password">Password</Label>
-                  <Input id="teacher-password" type="password" required />
+                  <Input id="teacher-password" type="password" required value={teacherPassword} onChange={(e) => setTeacherPassword(e.target.value)}/>
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col items-center gap-4">
-                 <Button className="w-full" asChild>
-                  <Link href="/teacher/dashboard">Login</Link>
-                </Button>
+                 <Button className="w-full" onClick={() => handleLogin('teacher')}>Login</Button>
                 <p className="text-sm text-muted-foreground">
                   Don't have an account? <Link href="/register" className="font-semibold text-primary hover:underline">Register here</Link>
                 </p>
