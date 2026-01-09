@@ -7,13 +7,13 @@ import Link from "next/link"
 import { School, GraduationCap } from 'lucide-react'
 import { Logo } from "@/components/logo"
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <main className="flex min-h-screen w-full items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="flex flex-col items-center space-y-2">
             <Logo />
-            <p className="text-muted-foreground text-center">Your Digital Bridge to a Smarter Campus Experience.</p>
+            <p className="text-muted-foreground text-center">Create an account to get started.</p>
         </div>
         <Tabs defaultValue="student" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -27,25 +27,33 @@ export default function LoginPage() {
           <TabsContent value="student">
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline text-2xl">Student Login</CardTitle>
-                <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
+                <CardTitle className="font-headline text-2xl">Student Registration</CardTitle>
+                <CardDescription>Fill out the form to create your student account.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="student-email">Email</Label>
-                  <Input id="student-email" type="email" placeholder="student@example.edu" required />
+                  <Label htmlFor="student-name">Full Name</Label>
+                  <Input id="student-name" placeholder="John Doe" required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="student-password">Password</Label>
-                  <Input id="student-password" type="password" required />
+                  <Label htmlFor="student-id">College ID</Label>
+                  <Input id="student-id" placeholder="12345" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="student-email-reg">Email</Label>
+                  <Input id="student-email-reg" type="email" placeholder="student@example.edu" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="student-password-reg">Password</Label>
+                  <Input id="student-password-reg" type="password" required />
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col items-center gap-4">
                 <Button className="w-full" asChild>
-                  <Link href="/student/dashboard">Login</Link>
+                  <Link href="/student/dashboard">Register</Link>
                 </Button>
                 <p className="text-sm text-muted-foreground">
-                  Don't have an account? <Link href="/register" className="font-semibold text-primary hover:underline">Register here</Link>
+                  Already have an account? <Link href="/" className="font-semibold text-primary hover:underline">Login here</Link>
                 </p>
               </CardFooter>
             </Card>
@@ -53,25 +61,29 @@ export default function LoginPage() {
           <TabsContent value="teacher">
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline text-2xl">Teacher Login</CardTitle>
-                <CardDescription>Enter your credentials to manage your classes.</CardDescription>
+                <CardTitle className="font-headline text-2xl">Teacher Registration</CardTitle>
+                <CardDescription>Fill out the form to create your teacher account.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="teacher-email">Email</Label>
-                  <Input id="teacher-email" type="email" placeholder="teacher@example.edu" required />
+                  <Label htmlFor="teacher-name">Full Name</Label>
+                  <Input id="teacher-name" placeholder="Dr. Jane Smith" required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="teacher-password">Password</Label>
-                  <Input id="teacher-password" type="password" required />
+                  <Label htmlFor="teacher-email-reg">Email</Label>
+                  <Input id="teacher-email-reg" type="email" placeholder="teacher@example.edu" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="teacher-password-reg">Password</Label>
+                  <Input id="teacher-password-reg" type="password" required />
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col items-center gap-4">
                  <Button className="w-full" asChild>
-                  <Link href="/teacher/dashboard">Login</Link>
+                  <Link href="/teacher/dashboard">Register</Link>
                 </Button>
                 <p className="text-sm text-muted-foreground">
-                  Don't have an account? <Link href="/register" className="font-semibold text-primary hover:underline">Register here</Link>
+                  Already have an account? <Link href="/" className="font-semibold text-primary hover:underline">Login here</Link>
                 </p>
               </CardFooter>
             </Card>
