@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Users, UserPlus, RefreshCw, Eye } from "lucide-react";
+import { Copy, Users, UserPlus, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useDatabase, useUser } from "@/firebase";
 import { ref, get, set, remove, onValue } from "firebase/database";
@@ -167,8 +167,7 @@ export default function TeacherStudentsPage() {
             <Copy className="h-4 w-4" />
           </Button>
           <Button onClick={generateCode} disabled={!!classCode}>
-            {classCode ? <RefreshCw className="mr-2 h-4 w-4"/> : null}
-            {classCode ? "Regenerate Code" : "Generate New Code"}
+            Generate New Code
           </Button>
         </CardContent>
       </Card>
