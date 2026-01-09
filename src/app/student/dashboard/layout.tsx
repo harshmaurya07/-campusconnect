@@ -1,3 +1,4 @@
+'use client';
 import {
   SidebarProvider,
   Sidebar,
@@ -39,6 +40,11 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
+import { useAuth, useDatabase, useUser } from "@/firebase";
+import { ref, get } from "firebase/database";
+import { useEffect, useState } from "react";
+import { signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 const navItems = [
   { href: "/student/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -66,38 +72,66 @@ function ClassSwitcher() {
 }
 
 function UserNav() {
+  const { user } = useUser();
+  const auth = useAuth();
+  const database = useDatabase();
+  const router = useRouter();
+  const [userProfile, setUserProfile] = useState<{ fullName: string; email: string } | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      const userProfileRef = ref(database, `users/student/${user.uid}`);
+      get(userProfileRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          setUserProfile(snapshot.val());
+        }
+      });
+    }
+  }, [user, database]);
+
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      router.push('/login');
+    });
+  };
+
+  const getInitials = (name: string) => {
+    if (!name) return "";
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src="https://i.pravatar.cc/150?u=student" alt="@student" />
-            <AvatarFallback>S</AvatarFallback>
+            <AvatarImage src={`https://i.pravatar.cc/150?u=${user?.uid}`} alt={userProfile?.fullName || ''} />
+            <AvatarFallback>{userProfile ? getInitials(userProfile.fullName) : 'S'}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Student</p>
+            <p className="text-sm font-medium leading-none">{userProfile?.fullName || 'Student'}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              student@example.com
+              {userProfile?.email || 'student@example.com'}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+          <DropdownMenuItem asChild>
+            <Link href="/student/dashboard/settings">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/login">
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
-          </Link>
+        <DropdownMenuItem onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
