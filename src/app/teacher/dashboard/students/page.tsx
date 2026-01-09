@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Users, UserPlus, Eye } from "lucide-react";
+import { Copy, Users, UserPlus, Eye, Edit, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useDatabase, useUser } from "@/firebase";
 import { ref, get, set, remove, onValue } from "firebase/database";
@@ -19,6 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 
 interface Student {
   id: string;
@@ -35,7 +36,9 @@ interface PendingRequest extends Student {
 
 
 export default function TeacherStudentsPage() {
-  const [classCode, setClassCode] = useState<string | null>(null);
+  const [classCode, setClassCode] = useState<string>('');
+  const [initialClassCode, setInitialClassCode] = useState<string>('');
+  const [isEditingCode, setIsEditingCode] = useState(false);
   const [enrolledStudents, setEnrolledStudents] = useState<Student[]>([]);
   const [pendingRequests, setPendingRequests] = useState<PendingRequest[]>([]);
   
@@ -51,6 +54,10 @@ export default function TeacherStudentsPage() {
         const code = snapshot.val();
         if(code) {
           setClassCode(code);
+          setInitialClassCode(code);
+          setIsEditingCode(false);
+        } else {
+            setIsEditingCode(true); // If no code, start in editing mode
         }
       });
       
@@ -87,17 +94,35 @@ export default function TeacherStudentsPage() {
   }, [user, database]);
 
 
-  const generateCode = async () => {
-    if (!user) return;
-    // Generate a more unique code
-    const newCode = `CS${Math.floor(Math.random() * 900) + 100}-${new Date().getTime().toString().slice(-4)}`;
+  const handleSaveCode = async () => {
+    if (!user || !classCode) {
+        toast({ variant: 'destructive', title: 'Class code cannot be empty.' });
+        return;
+    }
+    if (classCode === initialClassCode) {
+        setIsEditingCode(false);
+        return;
+    }
+
+    const newCodeRef = ref(database, `classCodes/${classCode}`);
+    const snapshot = await get(newCodeRef);
+
+    if (snapshot.exists()) {
+        toast({ variant: 'destructive', title: 'Code not available', description: 'This class code is already in use. Please choose another one.' });
+        return;
+    }
+
+    // If there was an old code, remove it from the lookup table
+    if (initialClassCode) {
+        await remove(ref(database, `classCodes/${initialClassCode}`));
+    }
     
     // Save to multiple locations for lookup
-    await set(ref(database, `classCodes/${newCode}`), { teacherId: user.uid });
-    await set(ref(database, `teachers/${user.uid}/classCode`), newCode);
+    await set(ref(database, `classCodes/${classCode}`), { teacherId: user.uid });
+    await set(ref(database, `teachers/${user.uid}/classCode`), classCode);
 
-    setClassCode(newCode);
-    toast({ title: "Class Code Generated!", description: "Your new class code has been created and saved." });
+    toast({ title: "Class Code Saved!", description: "Your new class code has been saved." });
+    setIsEditingCode(false);
   };
   
   const copyCode = () => {
@@ -160,15 +185,34 @@ export default function TeacherStudentsPage() {
           <CardDescription>Share this code with your students to allow them to register for your class.</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center gap-4">
-          <div className="flex-1 rounded-md border bg-muted px-4 py-2 font-mono text-lg">
-            {classCode || "No code generated"}
-          </div>
-          <Button variant="outline" size="icon" onClick={copyCode} disabled={!classCode}>
-            <Copy className="h-4 w-4" />
-          </Button>
-          <Button onClick={generateCode} disabled={!!classCode}>
-            Generate Code
-          </Button>
+          {isEditingCode ? (
+             <Input 
+                value={classCode}
+                onChange={(e) => setClassCode(e.target.value)}
+                placeholder="Enter a unique class code"
+                className="flex-1 font-mono text-lg"
+             />
+          ) : (
+             <div className="flex-1 rounded-md border bg-muted px-4 py-2 font-mono text-lg h-11 flex items-center">
+                {classCode}
+             </div>
+          )}
+
+          {isEditingCode ? (
+            <Button onClick={handleSaveCode}>
+                <Save className="mr-2 h-4 w-4" /> Save Code
+            </Button>
+          ) : (
+            <>
+                <Button variant="outline" size="icon" onClick={copyCode} disabled={!classCode}>
+                    <Copy className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditingCode(true)}>
+                    <Edit className="mr-2 h-4 w-4" /> Edit Code
+                </Button>
+            </>
+          )}
+
         </CardContent>
       </Card>
 

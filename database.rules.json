@@ -15,7 +15,7 @@
       }
     },
     "classCodes": {
-      ".read": "auth != null",
+      ".read": "auth != null  && auth.uid === $uid",
       "$classCode": {
         ".write": "auth != null && !data.exists()"
       }
