@@ -83,11 +83,10 @@ export default function StudentSettingsPage() {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src={`https://i.pravatar.cc/150?u=${user?.uid}`} alt={fullName} />
               <AvatarFallback>{getInitials(fullName)}</AvatarFallback>
             </Avatar>
             <div className='text-sm text-muted-foreground'>
-                <p>To change your avatar, you can use a service like Gravatar.</p>
+                <p>Your avatar is generated from your name.</p>
             </div>
           </div>
           <div className="space-y-2">

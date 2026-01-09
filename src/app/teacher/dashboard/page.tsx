@@ -48,7 +48,6 @@ export default function TeacherDashboardPage() {
                 recentActivities.map((item, index) => (
                   <div key={index} className="flex items-center">
                     <Avatar className="h-9 w-9">
-                      <AvatarImage src={`https://i.pravatar.cc/150?u=${item.student}`} alt="Avatar" />
                       <AvatarFallback>{item.student.substring(0,2)}</AvatarFallback>
                     </Avatar>
                     <div className="ml-4 space-y-1">

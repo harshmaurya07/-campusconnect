@@ -81,7 +81,6 @@ function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={`https://i.pravatar.cc/150?u=${user?.uid}`} alt={userProfile?.fullName || ''} />
             <AvatarFallback>{userProfile ? getInitials(userProfile.fullName) : 'T'}</AvatarFallback>
           </Avatar>
         </Button>
