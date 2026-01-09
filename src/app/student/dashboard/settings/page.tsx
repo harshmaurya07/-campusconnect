@@ -1,30 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth, useDatabase, useUser } from '@/firebase';
-import { ref, get, set, update } from 'firebase/database';
+import { useAuth, useDatabase, useUser, useStorage } from '@/firebase';
+import { ref as dbRef, get, update } from 'firebase/database';
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from 'firebase/auth';
+import { Textarea } from '@/components/ui/textarea';
+import { Upload } from 'lucide-react';
 
 export default function StudentSettingsPage() {
   const { user } = useUser();
-  const auth = useAuth();
   const database = useDatabase();
+  const storage = useStorage();
   const { toast } = useToast();
 
   const [fullName, setFullName] = useState('');
   const [collegeId, setCollegeId] = useState('');
   const [email, setEmail] = useState('');
+  const [bio, setBio] = useState('');
   const [profile, setProfile] = useState<any>(null);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
 
   useEffect(() => {
     if (user) {
-      const userProfileRef = ref(database, `users/student/${user.uid}`);
+      const userProfileRef = dbRef(database, `users/student/${user.uid}`);
       get(userProfileRef).then((snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
@@ -32,34 +39,59 @@ export default function StudentSettingsPage() {
           setFullName(data.fullName);
           setCollegeId(data.collegeId);
           setEmail(data.email);
+          setBio(data.bio || '');
         }
       });
     }
   }, [user, database]);
+  
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
 
-  const handleUpdateProfile = () => {
-    if (user) {
-      const userProfileRef = ref(database, `users/student/${user.uid}`);
-      const updatedData = {
-        ...profile,
-        fullName,
-        collegeId,
-      };
-      update(userProfileRef, updatedData)
-        .then(() => {
-          toast({
-            title: 'Profile Updated',
-            description: 'Your profile has been updated successfully.',
-          });
-          setProfile(updatedData);
-        })
-        .catch((error) => {
-          toast({
-            variant: 'destructive',
-            title: 'Update Failed',
-            description: error.message,
-          });
-        });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProfileImage(e.target.files[0]);
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    if (!user) return;
+
+    const userProfileRef = dbRef(database, `users/student/${user.uid}`);
+    let photoURL = profile.photoURL;
+
+    if (profileImage) {
+        setIsUploading(true);
+        const imageRef = storageRef(storage, `profile_photos/${user.uid}/${profileImage.name}`);
+        try {
+            await uploadBytes(imageRef, profileImage);
+            photoURL = await getDownloadURL(imageRef);
+            toast({ title: 'Photo uploaded successfully!' });
+        } catch (error: any) {
+            toast({ variant: 'destructive', title: 'Photo Upload Failed', description: error.message });
+            setIsUploading(false);
+            return;
+        }
+    }
+    
+    const updatedData = {
+      ...profile,
+      fullName,
+      collegeId,
+      bio,
+      photoURL,
+    };
+
+    try {
+        await update(userProfileRef, updatedData);
+        toast({ title: 'Profile Updated', description: 'Your profile has been updated successfully.' });
+        setProfile(updatedData);
+        setProfileImage(null);
+    } catch (error: any) {
+        toast({ variant: 'destructive', title: 'Update Failed', description: error.message });
+    } finally {
+        setIsUploading(false);
     }
   };
   
@@ -82,11 +114,23 @@ export default function StudentSettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarFallback>{getInitials(fullName)}</AvatarFallback>
-            </Avatar>
-            <div className='text-sm text-muted-foreground'>
-                <p>Your avatar is generated from your name.</p>
+            <div className='relative cursor-pointer' onClick={handleAvatarClick}>
+                <Avatar className="h-20 w-20">
+                  <AvatarImage src={profile?.photoURL} alt={fullName} />
+                  <AvatarFallback>{getInitials(fullName)}</AvatarFallback>
+                </Avatar>
+                <div className='absolute inset-0 bg-black/50 flex items-center justify-center rounded-full opacity-0 hover:opacity-100 transition-opacity'>
+                    <Upload className='h-6 w-6 text-white' />
+                </div>
+            </div>
+             <Input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+             <div>
+                <p className='font-medium'>
+                    {profileImage ? profileImage.name : 'Upload Profile Photo'}
+                </p>
+                <p className='text-sm text-muted-foreground'>
+                   Click the avatar to upload a new image.
+                </p>
             </div>
           </div>
           <div className="space-y-2">
@@ -101,9 +145,15 @@ export default function StudentSettingsPage() {
             <Label htmlFor="email">Email</Label>
             <Input id="email" value={email} disabled />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="bio">Bio</Label>
+            <Textarea id="bio" placeholder="Tell us a little about yourself" value={bio} onChange={(e) => setBio(e.target.value)} />
+          </div>
         </CardContent>
         <CardFooter>
-          <Button onClick={handleUpdateProfile}>Save Changes</Button>
+          <Button onClick={handleUpdateProfile} disabled={isUploading}>
+            {isUploading ? 'Saving...' : 'Save Changes'}
+            </Button>
         </CardFooter>
       </Card>
     </div>

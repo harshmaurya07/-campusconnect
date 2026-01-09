@@ -56,6 +56,8 @@ export default function RegisterPage() {
           email: user.email,
           fullName: name,
           role: role,
+          photoURL: '',
+          bio: ''
         });
         toast({ title: "Registration Successful", description: "Your teacher account has been created." });
         router.push('/teacher/dashboard');
@@ -80,6 +82,8 @@ export default function RegisterPage() {
           collegeId: studentCollegeId,
           status: 'pending',
           classCode: studentClassCode,
+          photoURL: '',
+          bio: ''
         });
 
         await auth.signOut();

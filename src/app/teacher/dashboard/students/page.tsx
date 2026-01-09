@@ -6,16 +6,27 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Users, UserPlus, RefreshCw } from "lucide-react";
+import { Copy, Users, UserPlus, RefreshCw, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useDatabase, useUser } from "@/firebase";
 import { ref, get, set, remove, onValue } from "firebase/database";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface Student {
   id: string;
   fullName: string;
   email: string;
   collegeId: string;
+  photoURL?: string;
+  bio?: string;
 }
 
 interface PendingRequest extends Student {
@@ -98,6 +109,11 @@ export default function TeacherStudentsPage() {
       });
     }
   }
+  
+    const getInitials = (name: string) => {
+        if (!name) return "";
+        return name.split(' ').map(n => n[0]).join('').toUpperCase();
+    }
 
   const handleApprove = async (request: PendingRequest) => {
     if (!user) return;
@@ -107,7 +123,9 @@ export default function TeacherStudentsPage() {
       email: request.email,
       fullName: request.fullName,
       collegeId: request.collegeId,
-      role: 'student'
+      role: 'student',
+      photoURL: request.photoURL || '',
+      bio: request.bio || '',
     };
 
     // Add to main student user pool
@@ -176,18 +194,46 @@ export default function TeacherStudentsPage() {
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>College ID</TableHead>
-                    <TableHead className="text-right">Attendance</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {enrolledStudents.length > 0 ? (
                     enrolledStudents.map((student) => (
                       <TableRow key={student.id}>
-                        <TableCell className="font-medium">{student.fullName}</TableCell>
+                        <TableCell className="font-medium flex items-center gap-2">
+                          <Avatar className="h-8 w-8">
+                              <AvatarImage src={student.photoURL} alt={student.fullName} />
+                              <AvatarFallback>{getInitials(student.fullName)}</AvatarFallback>
+                          </Avatar>
+                          {student.fullName}
+                        </TableCell>
                         <TableCell>{student.email}</TableCell>
                          <TableCell>{student.collegeId}</TableCell>
                         <TableCell className="text-right">
-                          <Badge variant="secondary">N/A</Badge>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle className="font-headline text-2xl flex items-center gap-4">
+                                  <Avatar className="h-16 w-16">
+                                    <AvatarImage src={student.photoURL} alt={student.fullName} />
+                                    <AvatarFallback>{getInitials(student.fullName)}</AvatarFallback>
+                                  </Avatar>
+                                  {student.fullName}
+                                </DialogTitle>
+                                <DialogDescription>{student.email} | {student.collegeId}</DialogDescription>
+                              </DialogHeader>
+                              <div>
+                                <h4 className="font-semibold mb-2">Bio</h4>
+                                <p className="text-sm text-muted-foreground">{student.bio || 'No bio provided.'}</p>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                         </TableCell>
                       </TableRow>
                     ))

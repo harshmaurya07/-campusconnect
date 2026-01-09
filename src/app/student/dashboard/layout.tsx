@@ -74,7 +74,7 @@ function UserNav() {
   const auth = useAuth();
   const database = useDatabase();
   const router = useRouter();
-  const [userProfile, setUserProfile] = useState<{ fullName: string; email: string } | null>(null);
+  const [userProfile, setUserProfile] = useState<{ fullName: string; email: string; photoURL?: string; } | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -103,6 +103,7 @@ function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
+            <AvatarImage src={userProfile?.photoURL} alt={userProfile?.fullName} />
             <AvatarFallback>{userProfile ? getInitials(userProfile.fullName) : 'S'}</AvatarFallback>
           </Avatar>
         </Button>

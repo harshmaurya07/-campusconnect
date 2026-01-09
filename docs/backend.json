@@ -27,6 +27,14 @@
         "collegeId": {
           "type": "string",
           "description": "The college ID of the user. Only applicable to students."
+        },
+        "photoURL": {
+            "type": "string",
+            "description": "The URL of the user's profile picture."
+        },
+        "bio": {
+            "type": "string",
+            "description": "A short bio or description about the user."
         }
       },
       "required": [
