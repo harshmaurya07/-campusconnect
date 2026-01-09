@@ -1,3 +1,4 @@
+'use client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,11 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Send, Pin } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const pastAnnouncements = [
-  { title: "Mid-term exam schedule", content: "The mid-term exam is scheduled for next Friday. Best of luck!", date: "July 15, 2024", pinned: true },
-  { title: "Class cancelled on Monday", content: "Please be advised that the class for this coming Monday has been cancelled.", date: "July 12, 2024", pinned: false },
-  { title: "New reading material uploaded", content: "Chapter 5 reading material has been uploaded to the portal.", date: "July 10, 2024", pinned: false },
-]
+const pastAnnouncements: any[] = [];
 
 export default function TeacherAnnouncementsPage() {
   return (
@@ -52,18 +49,24 @@ export default function TeacherAnnouncementsPage() {
             <CardDescription>A history of all messages you've sent.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {pastAnnouncements.map((item, index) => (
-                <div key={index} className="flex flex-col gap-1 rounded-lg border p-4">
-                    <div className="flex items-center justify-between">
-                        <h3 className="font-semibold">{item.title}</h3>
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">{item.date}</span>
-                            {item.pinned && <Pin className="h-4 w-4 text-primary" />}
-                        </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{item.content}</p>
-                </div>
-            ))}
+            {pastAnnouncements.length > 0 ? (
+              pastAnnouncements.map((item, index) => (
+                  <div key={index} className="flex flex-col gap-1 rounded-lg border p-4">
+                      <div className="flex items-center justify-between">
+                          <h3 className="font-semibold">{item.title}</h3>
+                          <div className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground">{item.date}</span>
+                              {item.pinned && <Pin className="h-4 w-4 text-primary" />}
+                          </div>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{item.content}</p>
+                  </div>
+              ))
+            ) : (
+               <div className="text-center text-muted-foreground py-10">
+                <p>You haven't sent any announcements yet.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

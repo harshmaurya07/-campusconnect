@@ -54,14 +54,12 @@ const navItems = [
 
 function ClassSwitcher() {
     return (
-        <Select defaultValue="cs-101">
+        <Select>
             <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select a class" />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="cs-101">Computer Science 101</SelectItem>
-                <SelectItem value="ma-203">Calculus II</SelectItem>
-                <SelectItem value="en-101">English Literature</SelectItem>
+                <div className="p-2 text-sm text-muted-foreground">No classes joined yet.</div>
                 <DropdownMenuSeparator />
                 <Button variant="ghost" className="w-full justify-start rounded-sm h-8 px-2 font-normal">
                     <PlusCircle className="mr-2"/> Join new class
@@ -173,10 +171,6 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
             <ClassSwitcher />
             <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5"/>
-                <span className="absolute top-1 right-1 flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                </span>
             </Button>
             <UserNav />
           </div>

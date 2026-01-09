@@ -1,20 +1,17 @@
+'use client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Users, CalendarCheck, BookOpen, Percent } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const stats = [
-  { title: "Total Students", value: "125", icon: Users, change: "+5 this week" },
-  { title: "Average Attendance", value: "88%", icon: Percent, change: "-2% vs last month" },
-  { title: "Assignments to Grade", value: "3", icon: BookOpen, change: "1 new submission" },
-  { title: "Classes Managed", value: "4", icon: CalendarCheck, change: "CS-101, MA-203,..." },
+  { title: "Total Students", value: "0", icon: Users, change: "" },
+  { title: "Average Attendance", value: "0%", icon: Percent, change: "" },
+  { title: "Assignments to Grade", value: "0", icon: BookOpen, change: "" },
+  { title: "Classes Managed", value: "0", icon: CalendarCheck, change: "" },
 ];
 
-const recentActivities = [
-    { student: "Alice Johnson", activity: "submitted 'Calculus Homework 3'", time: "2 hours ago" },
-    { student: "Bob Williams", activity: "requested to join 'CS-101'", time: "5 hours ago" },
-    { student: "Charlie Brown", activity: "attendance dropped to 72%", time: "1 day ago" },
-]
+const recentActivities: any[] = [];
 
 export default function TeacherDashboardPage() {
   return (
@@ -47,18 +44,24 @@ export default function TeacherDashboardPage() {
           </CardHeader>
           <CardContent>
              <div className="space-y-4">
-              {recentActivities.map((item, index) => (
-                <div key={index} className="flex items-center">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src={`https://i.pravatar.cc/150?u=${item.student}`} alt="Avatar" />
-                    <AvatarFallback>{item.student.substring(0,2)}</AvatarFallback>
-                  </Avatar>
-                  <div className="ml-4 space-y-1">
-                    <p className="text-sm font-medium leading-none">{item.student} <span className="font-normal text-muted-foreground">{item.activity}</span></p>
-                    <p className="text-sm text-muted-foreground">{item.time}</p>
+              {recentActivities.length > 0 ? (
+                recentActivities.map((item, index) => (
+                  <div key={index} className="flex items-center">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={`https://i.pravatar.cc/150?u=${item.student}`} alt="Avatar" />
+                      <AvatarFallback>{item.student.substring(0,2)}</AvatarFallback>
+                    </Avatar>
+                    <div className="ml-4 space-y-1">
+                      <p className="text-sm font-medium leading-none">{item.student} <span className="font-normal text-muted-foreground">{item.activity}</span></p>
+                      <p className="text-sm text-muted-foreground">{item.time}</p>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center text-muted-foreground py-10">
+                  <p>No recent activity to show.</p>
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>

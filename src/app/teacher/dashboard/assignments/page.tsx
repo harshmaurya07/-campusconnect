@@ -1,3 +1,4 @@
+'use client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,12 +22,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-const assignments = [
-  { title: "Calculus Homework 3", class: "MA-203", deadline: "2024-07-30", submissions: "15/30" },
-  { title: "Final Essay", class: "EN-101", deadline: "2024-08-15", submissions: "5/28" },
-  { title: "Lab Report 2", class: "CS-101", deadline: "2024-07-25", submissions: "28/32" },
-]
-
+const assignments: any[] = [];
 
 export default function TeacherAssignmentsPage() {
   return (
@@ -116,24 +112,32 @@ export default function TeacherAssignmentsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {assignments.map((assignment, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{assignment.title}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{assignment.class}</Badge>
-                  </TableCell>
-                  <TableCell>{assignment.deadline}</TableCell>
-                  <TableCell>{assignment.submissions}</TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button variant="ghost" size="icon">
-                      <Edit className="h-4 w-4"/>
-                    </Button>
-                     <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                      <Trash2 className="h-4 w-4"/>
-                    </Button>
+              {assignments.length > 0 ? (
+                assignments.map((assignment, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{assignment.title}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{assignment.class}</Badge>
+                    </TableCell>
+                    <TableCell>{assignment.deadline}</TableCell>
+                    <TableCell>{assignment.submissions}</TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Button variant="ghost" size="icon">
+                        <Edit className="h-4 w-4"/>
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                        <Trash2 className="h-4 w-4"/>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                    No assignments published yet.
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>

@@ -1,3 +1,4 @@
+'use client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,12 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
-const students = [
-  { name: "Alice Johnson", id: "s1" },
-  { name: "Bob Williams", id: "s2" },
-  { name: "Charlie Brown", id: "s3" },
-  { name: "Diana Miller", id: "s4" },
-];
+const students: any[] = [];
 
 export default function TeacherAttendancePage() {
   return (
@@ -59,21 +55,29 @@ export default function TeacherAttendancePage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {students.map((student) => (
-                <TableRow key={student.id}>
-                  <TableCell className="font-medium">{student.name}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                        <Label htmlFor={`attendance-${student.id}`}>Present</Label>
-                        <Switch id={`attendance-${student.id}`} defaultChecked />
-                    </div>
+              {students.length > 0 ? (
+                students.map((student) => (
+                  <TableRow key={student.id}>
+                    <TableCell className="font-medium">{student.name}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                          <Label htmlFor={`attendance-${student.id}`}>Present</Label>
+                          <Switch id={`attendance-${student.id}`} defaultChecked />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={2} className="h-24 text-center text-muted-foreground">
+                    No students enrolled in this class yet.
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
           <div className="mt-6 flex justify-end">
-            <Button>Save Attendance</Button>
+            <Button disabled={students.length === 0}>Save Attendance</Button>
           </div>
         </CardContent>
       </Card>

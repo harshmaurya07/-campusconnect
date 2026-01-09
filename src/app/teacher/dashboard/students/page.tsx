@@ -9,20 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { Copy, Users, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const enrolledStudents = [
-  { name: "Alice Johnson", email: "alice@example.com", attendance: "95%" },
-  { name: "Bob Williams", email: "bob@example.com", attendance: "88%" },
-  { name: "Charlie Brown", email: "charlie@example.com", attendance: "72%" },
-  { name: "Diana Miller", email: "diana@example.com", attendance: "98%" },
-];
-
-const pendingRequests = [
-  { name: "Eve Davis", email: "eve@example.com", collegeId: "S67890" },
-  { name: "Frank White", email: "frank@example.com", collegeId: "S11223" },
-];
+const enrolledStudents: any[] = [];
+const pendingRequests: any[] = [];
 
 export default function TeacherStudentsPage() {
-  const [classCode, setClassCode] = useState<string | null>("CS101-FA24");
+  const [classCode, setClassCode] = useState<string | null>(null);
   const { toast } = useToast();
 
   const generateCode = () => {
@@ -70,7 +61,7 @@ export default function TeacherStudentsPage() {
             <Users className="mr-2 h-4 w-4" /> Enrolled Students
           </TabsTrigger>
           <TabsTrigger value="pending">
-            <UserPlus className="mr-2 h-4 w-4" /> Pending Requests <Badge className="ml-2">{pendingRequests.length}</Badge>
+            <UserPlus className="mr-2 h-4 w-4" /> Pending Requests {pendingRequests.length > 0 && <Badge className="ml-2">{pendingRequests.length}</Badge>}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="enrolled">
@@ -88,15 +79,23 @@ export default function TeacherStudentsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {enrolledStudents.map((student) => (
-                    <TableRow key={student.email}>
-                      <TableCell className="font-medium">{student.name}</TableCell>
-                      <TableCell>{student.email}</TableCell>
-                      <TableCell className="text-right">
-                         <Badge variant={parseInt(student.attendance) < 75 ? "destructive" : "secondary"}>{student.attendance}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {enrolledStudents.length > 0 ? (
+                    enrolledStudents.map((student) => (
+                      <TableRow key={student.email}>
+                        <TableCell className="font-medium">{student.name}</TableCell>
+                        <TableCell>{student.email}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant={parseInt(student.attendance) < 75 ? "destructive" : "secondary"}>{student.attendance}</Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                     <TableRow>
+                        <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
+                          No students enrolled yet.
+                        </TableCell>
+                      </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -118,17 +117,25 @@ export default function TeacherStudentsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pendingRequests.map((request) => (
-                    <TableRow key={request.email}>
-                      <TableCell className="font-medium">{request.name}</TableCell>
-                      <TableCell>{request.email}</TableCell>
-                      <TableCell>{request.collegeId}</TableCell>
-                      <TableCell className="text-right space-x-2">
-                        <Button size="sm" className="bg-green-500 hover:bg-green-600">Approve</Button>
-                        <Button variant="destructive" size="sm">Deny</Button>
+                  {pendingRequests.length > 0 ? (
+                    pendingRequests.map((request) => (
+                      <TableRow key={request.email}>
+                        <TableCell className="font-medium">{request.name}</TableCell>
+                        <TableCell>{request.email}</TableCell>
+                        <TableCell>{request.collegeId}</TableCell>
+                        <TableCell className="text-right space-x-2">
+                          <Button size="sm" className="bg-green-500 hover:bg-green-600">Approve</Button>
+                          <Button variant="destructive" size="sm">Deny</Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                        No pending requests.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </CardContent>

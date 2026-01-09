@@ -1,3 +1,4 @@
+'use client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -6,15 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, CheckCircle, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input"
 
-const pendingAssignments = [
-  { title: "Calculus Homework 3", class: "MA-203", deadline: "July 30, 2024", mode: "Online" },
-  { title: "Final Essay", class: "EN-101", deadline: "August 15, 2024", mode: "Online" },
-];
-
-const submittedAssignments = [
-  { title: "Lab Report 2", class: "CS-101", submittedOn: "July 22, 2024", grade: "A-", mode: "Online" },
-  { title: "Mid-term Paper", class: "EN-101", submittedOn: "July 10, 2024", grade: "B+", mode: "Offline" },
-]
+const pendingAssignments: any[] = [];
+const submittedAssignments: any[] = [];
 
 export default function StudentAssignmentsPage() {
   return (
@@ -49,23 +43,31 @@ export default function StudentAssignmentsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pendingAssignments.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{item.title}</TableCell>
-                      <TableCell><Badge variant="outline">{item.class}</Badge></TableCell>
-                      <TableCell>{item.deadline}</TableCell>
-                      <TableCell className="text-right">
-                         {item.mode === "Online" ? (
-                            <div className="flex items-center justify-end gap-2">
-                                <Input type="file" className="text-xs h-9 file:mr-2 file:text-xs"/>
-                                <Button size="sm">Submit</Button>
-                            </div>
-                         ) : (
-                            <Badge variant="secondary">Offline Submission</Badge>
-                         )}
+                  {pendingAssignments.length > 0 ? (
+                    pendingAssignments.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">{item.title}</TableCell>
+                        <TableCell><Badge variant="outline">{item.class}</Badge></TableCell>
+                        <TableCell>{item.deadline}</TableCell>
+                        <TableCell className="text-right">
+                          {item.mode === "Online" ? (
+                              <div className="flex items-center justify-end gap-2">
+                                  <Input type="file" className="text-xs h-9 file:mr-2 file:text-xs"/>
+                                  <Button size="sm">Submit</Button>
+                              </div>
+                          ) : (
+                              <Badge variant="secondary">Offline Submission</Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
+                        No pending assignments.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -87,16 +89,24 @@ export default function StudentAssignmentsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {submittedAssignments.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{item.title}</TableCell>
-                      <TableCell><Badge variant="outline">{item.class}</Badge></TableCell>
-                      <TableCell>{item.submittedOn}</TableCell>
-                      <TableCell className="text-right">
-                         <Badge variant="default" className="bg-green-500 text-white">{item.grade}</Badge>
+                  {submittedAssignments.length > 0 ? (
+                    submittedAssignments.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">{item.title}</TableCell>
+                        <TableCell><Badge variant="outline">{item.class}</Badge></TableCell>
+                        <TableCell>{item.submittedOn}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant="default" className="bg-green-500 text-white">{item.grade}</Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                     <TableRow>
+                      <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
+                        You have not submitted any assignments yet.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </CardContent>

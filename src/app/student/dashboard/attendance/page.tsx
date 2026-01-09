@@ -1,13 +1,9 @@
+'use client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 
-const classAttendance = [
-  { class: "Computer Science 101", code: "CS-101", attendance: 92, status: "Good" },
-  { class: "Calculus II", code: "MA-203", attendance: 74, status: "Warning" },
-  { class: "English Literature", code: "EN-101", attendance: 98, status: "Excellent" },
-  { class: "Physics for Engineers", code: "PH-201", attendance: 85, status: "Good" },
-];
+const classAttendance: any[] = [];
 
 export default function StudentAttendancePage() {
   return (
@@ -23,18 +19,24 @@ export default function StudentAttendancePage() {
           <CardDescription>Overall attendance is calculated based on all your enrolled classes.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {classAttendance.map((item) => {
-            const isLow = item.attendance < 75;
-            return (
-              <div key={item.code}>
-                <div className="flex justify-between items-center mb-1">
-                  <p className="font-medium">{item.class} <Badge variant="secondary">{item.code}</Badge></p>
-                  <p className={`font-semibold ${isLow ? 'text-destructive' : ''}`}>{item.attendance}%</p>
+          {classAttendance.length > 0 ? (
+            classAttendance.map((item) => {
+              const isLow = item.attendance < 75;
+              return (
+                <div key={item.code}>
+                  <div className="flex justify-between items-center mb-1">
+                    <p className="font-medium">{item.class} <Badge variant="secondary">{item.code}</Badge></p>
+                    <p className={`font-semibold ${isLow ? 'text-destructive' : ''}`}>{item.attendance}%</p>
+                  </div>
+                  <Progress value={item.attendance} className={isLow ? "[&>div]:bg-destructive" : ""} />
                 </div>
-                <Progress value={item.attendance} className={isLow ? "[&>div]:bg-destructive" : ""} />
-              </div>
-            )
-          })}
+              )
+            })
+          ) : (
+            <div className="text-center text-muted-foreground py-10">
+              <p>Your attendance data is not available yet.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
