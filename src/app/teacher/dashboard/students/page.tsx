@@ -167,7 +167,7 @@ export default function TeacherStudentsPage() {
             <Copy className="h-4 w-4" />
           </Button>
           <Button onClick={generateCode} disabled={!!classCode}>
-            Generate New Code
+            Generate Code
           </Button>
         </CardContent>
       </Card>
