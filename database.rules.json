@@ -1,0 +1,44 @@
+{
+  "rules": {
+    "users": {
+      "student": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid"
+        }
+      },
+      "teacher": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid"
+        }
+      }
+    },
+    "classCodes": {
+      ".read": "auth != null",
+      "$classCode": {
+        ".write": "auth != null && !data.exists()"
+      }
+    },
+    "teachers": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "classRequests": {
+      "$teacherId": {
+        ".read": "auth != null && auth.uid === $teacherId",
+        "$studentId": {
+          ".write": "auth != null"
+        }
+      }
+    },
+    "classes": {
+      "$teacherId": {
+        ".read": "auth != null && auth.uid === $teacherId",
+        ".write": "auth != null && auth.uid === $teacherId"
+      }
+    }
+  }
+}
