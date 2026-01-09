@@ -8,9 +8,9 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { School, GraduationCap } from 'lucide-react'
 import { Logo } from "@/components/logo"
-import { useAuth, useFirestore, setDocumentNonBlocking } from "@/firebase";
+import { useAuth, useDatabase } from "@/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc } from "firebase/firestore";
+import { ref, set } from "firebase/database";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,7 +27,7 @@ export default function RegisterPage() {
   const [teacherPassword, setTeacherPassword] = useState('');
 
   const auth = useAuth();
-  const firestore = useFirestore();
+  const database = useDatabase();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -39,7 +39,8 @@ export default function RegisterPage() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      const userRef = doc(firestore, "users", user.uid);
+      
+      const userProfileRef = ref(database, `users/${role}/${user.uid}`);
       
       const userData: any = {
         id: user.uid,
@@ -53,7 +54,7 @@ export default function RegisterPage() {
         // Here you would typically also validate the classCode and enroll the student
       }
       
-      setDocumentNonBlocking(userRef, userData, { merge: true });
+      await set(userProfileRef, userData);
       
       toast({
         title: "Registration Successful",
